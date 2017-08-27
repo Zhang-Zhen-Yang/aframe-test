@@ -37,11 +37,9 @@
         //document.body.appendChild(effect.domElement);
 
         //plane
-        let planeGeometry = new THREE.PlaneGeometry(60, 20, 2, 2);
+        let planeGeometry = new THREE.PlaneGeometry(60, 20, 1, 1);
         let planeMaterial = new THREE.MeshLambertMaterial({ color: 0xffffff });
-        //let planeMaterial = new THREE.MeshNormalMaterial();
-        let baseMaterial = new THREE.MeshBasicMaterial({wireframe:true})
-        let plane = THREE.SceneUtils.createMultiMaterialObject(planeGeometry,[planeMaterial,baseMaterial])//*/new THREE.Mesh(planeGeometry, planeMaterial);
+        let plane = new THREE.Mesh(planeGeometry, planeMaterial);
         plane.rotation.x = -0.5*Math.PI;
         plane.position.x = 15;
         plane.position.y = 0;
@@ -116,73 +114,25 @@
         }
         let controls = new function(){
             
-            this.rotationSpeed = 0.02;
-            this.bouncingSpeed = 0.03;
-            this.numberOfObjects = 0;
-            let numberOfObjects = this.numberOfObjects;
-            this.addCube = function(){
-                let cubeSize = Math.ceil((Math.random()*3));
-                let cubeGeometry = new THREE.CubeGeometry(cubeSize,cubeSize,cubeSize);
-                let cubeMaterial = new THREE.MeshLambertMaterial({
-                    color:Math.random()*0xffffff
-                })
-                let cube = new THREE.Mesh(cubeGeometry,cubeMaterial);
-                cube.castShadow = true;
-                cube.name = 'cube-'+scene.children.length;
-                //console.debug(planeGeometry);
-                cube.position.x = -30+Math.round((
-                    Math.random()*planeGeometry.parameters.width
-                ))
-                cube.position.y = Math.round((
-                    Math.random()*5
-                ))
-                cube.position.z = -10+Math.round((
-                    Math.random()*planeGeometry.parameters.height
-                ))
-                //console.debug(cube.position);
-                scene.add(cube);
-                numberOfObjects = scene.children.length;
-            };
-            this.removeCube = function(){
-                let allChildren = scene.children;
-                let lastObject = allChildren[allChildren.length - 1 ];
-                if(lastObject instanceof THREE.Mesh){
-                    scene.remove(lastObject);
-                    numberOfObjects = scene.children.length;
-                }
-            }
+            this.positionX = 0.02;
+            this.positionY = 0.03;
+            this.positionZ = 0;
+            
         }
         let gui = new dat.GUI();
-        gui.add(controls,'numberOfObjects')
-        gui.add(controls,'rotationSpeed',0,0.5);
-        gui.add(controls,'bouncingSpeed',0,0.5);
-        gui.add(controls,'addCube');
-        gui.add(controls,'removeCube');
+        gui.add(controls,'positionX',0,10)
+        gui.add(controls,'positionY',0,10);
+        gui.add(controls,'positionZ',0,10);
+        
 
 
-        let one = 0;
+
         function render(){
             stats.update();
-            scene.traverse((e)=>{
-                if(e instanceof THREE.Mesh && e != plane &&e.geometry!= planeGeometry){
-                    if(one<10){
-                        console.debug(e);
-                        one++;
-                    }
-                    e.rotation.x += controls.rotationSpeed;
-                    e.rotation.y += controls.rotationSpeed;
-                    e.rotation.z += controls.rotationSpeed;
-                }
-            })
-            /*cube.rotation.x += controls.rotationSpeed;
-            cube.rotation.y += controls.rotationSpeed;
-            cube.rotation.z += controls.rotationSpeed;*/
-
-            step += controls.bouncingSpeed;
-            sphere.position.x = 20 +( 10*(Math.cos(step)));
-            sphere.position.y = 2 +(10*(Math.abs(Math.sin(step))));
-
-
+            
+           cube.position.x = controls.positionX;
+           cube.position.y = controls.positionY;
+           cube.position.z = controls.positionZ;
             requestAnimationFrame(render)          
 
             renderer.render(scene,camera);
